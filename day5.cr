@@ -2,11 +2,11 @@ def register(map, x, y)
   (map[x][y] += 1) == 2
 end
 
-def solve(map, inputs, short_x)
+def solve(map, inputs, short_y)
   inputs.sum do |values|
     xs = values[0].to(values[2])
     ys = values[1].to(values[3])
-    (short_x ? xs.zip(ys.cycle) : xs.cycle.zip(ys))
+    (short_y ? xs.zip(ys.cycle) : xs.cycle.zip(ys))
       .count { |x, y| register(map, x, y) }
   end
 end
