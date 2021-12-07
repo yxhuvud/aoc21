@@ -1,5 +1,5 @@
 def register(map, x, y)
-  (map[x][y] += 1) == 2
+  (map[x][y] += 1i8) == 2i8
 end
 
 def solve(map, inputs, short_y)
@@ -16,7 +16,7 @@ by_diff_dir = File.read("input.day5").strip
   .each_slice(4)
   .group_by { |(x1, y1, x2, y2)| {x1 == x2, y1 == y2} }
 
-map = Array(Array(Int32)).new(size: 1000) { Array(Int32).new(size: 1000) { 0 } }
+map = Array(Array(Int8)).new(size: 1000) { Array(Int8).new(size: 1000) { 0i8 } }
 orthogonal = solve(map, by_diff_dir[{true, false}], false) + solve(map, by_diff_dir[{false, true}], true)
 
 puts "part1: #{orthogonal}"
