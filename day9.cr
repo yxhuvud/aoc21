@@ -18,7 +18,7 @@ end
 min_points = 0.to(map.size - 1).flat_map do |x|
   0.to(map[0].size - 1)
     .map { |y| Pos.new(x.to_i8, y.to_i8) }
-    .select { |p| p.neighbours.all? { |n| n.above_threshold?(map, map[p.x][p.y]) } }
+    .select { |p| p.neighbours.all? &.above_threshold?(map, map[p.x][p.y]) }
 end.to_a
 
 puts "part1: #{min_points.sum(0) { |p| map[p.x][p.y] } + min_points.size}"
