@@ -32,7 +32,7 @@ scores = 0
 scores2 = Array(Int64).new
 
 stack = [] of Char
-filtered = inputs.reject do |l|
+inputs.reject do |l|
   stack.clear
   case consume_all?(l, stack)
   when ')' then scores += 3
