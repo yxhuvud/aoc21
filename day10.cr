@@ -1,5 +1,3 @@
-inputs = File.read("input.day10").lines
-
 def consume_all?(string, stack)
   string.each_char do |c|
     case c
@@ -30,9 +28,9 @@ end
 
 scores = 0
 scores2 = Array(Int64).new
-
 stack = [] of Char
-inputs.reject do |l|
+
+File.each_line("input.day10") do |l|
   stack.clear
   case consume_all?(l, stack)
   when ')' then scores += 3
