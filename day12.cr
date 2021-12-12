@@ -1,13 +1,12 @@
 require "bit_array"
 
 inputs = File.read("input.day12").lines.map(&.split('-'))
-
 paths = (inputs.map { |vs| [vs[0], vs[1]] } + inputs.map { |vs| [vs[1], vs[0]] })
   .group_by(&.first).transform_values(&.map(&.last))
 
 index = paths.keys.each_with_index.to_h { |k, i| {k, i.to_i8} }
-ipaths = paths.to_h { |k, vs| {index[k], vs.map { |v| index[v] }} }
 from, to = index["start"], index["end"]
+neighbours = paths.values.map { |vs| vs.map { |v| index[v] } }
 
 lowercase = BitArray.new(index.size)
 paths.keys.each { |k| lowercase[index[k]] = k[0].lowercase? }
@@ -50,5 +49,5 @@ def solve(paths, revisit, from, to, lowercase)
   counts.select { |k, _| k[0] == to }.values.sum
 end
 
-puts "part1: %s" % solve(ipaths, false, from, to, lowercase)
-puts "part2: %s" % solve(ipaths, true, from, to, lowercase)
+puts "part1: %s" % solve(neighbours, false, from, to, lowercase)
+puts "part2: %s" % solve(neighbours, true, from, to, lowercase)
