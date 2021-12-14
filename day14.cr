@@ -1,5 +1,5 @@
 def step(pairs, rules)
-  counts = Hash(Tuple(Char, Char), Int64).new { 0i64 }
+  counts = Hash(Tuple(Char, Char), Int64).new(0)
   pairs.each do |pair, c|
     rules[pair].each { |p| counts[p] += c }
   end
@@ -9,7 +9,7 @@ end
 def solve(pairs, rules, n, first, last)
   n.times { pairs = step(pairs, rules) }
 
-  counts = Hash(Char, Int64).new { 0i64 }
+  counts = Hash(Char, Int64).new(0)
   counts[first] = counts[last] = 1
   pairs.each do |(c1, c2), v|
     counts[c1] += v
