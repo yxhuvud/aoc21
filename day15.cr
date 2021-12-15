@@ -17,7 +17,7 @@ record(Pos, x : Int16, y : Int16) do
 
   def val(map)
     val = map[x % map.size][y % map[0].size].to_i8 + x // map.size + y // map[0].size
-    val > 9 ?  val - 9 : val
+    val > 9 ? val - 9 : val
   end
 
   def visited?(ba, xz)
@@ -51,5 +51,5 @@ def find(map, max_x, max_y)
   score
 end
 
-p find(map, map.size - 1, map[0].size - 1)
-p find(map, 5 * map.size - 1, 5 * map[0].size - 1)
+puts "part 1: %s" % find(map, map.size - 1, map[0].size - 1)
+puts "part 2: %s" % find(map, 5 * map.size - 1, 5 * map[0].size - 1)
