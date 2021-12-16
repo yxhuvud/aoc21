@@ -32,7 +32,7 @@ class FrontQueue(T)
     @bucket_count = front_width
   end
 
-  def pull : T?
+  def pull : Tuple(T, Int32)?
     return nil if @size == 0
 
     @size -= 1
@@ -40,13 +40,12 @@ class FrontQueue(T)
       @current += 1
       @front.rotate! 1
     end
-    @front[0].pop
+    {@front[0].pop, @current}
   end
 
   def insert(value : T, prio : Int32)
     @size += 1
     offset = prio - @current
-    raise "size issue #{@current}, #{prio}, #{@bucket_count}" if offset > @bucket_count - 2 || offset <= 0
     @front[offset].push value
   end
 end
@@ -54,8 +53,8 @@ end
 def find(map, max_x, max_y)
   p = Pos.new(0, 0)
   target = Pos.new(max_x.to_i16, max_y.to_i16)
-  queue = FrontQueue(Tuple(Pos, Int16)).new(11)
-  queue.insert({p, 0i16}, 1i16)
+  queue = FrontQueue(Pos).new(11)
+  queue.insert(p, 0)
   ba = BitArray.new((max_x + 1) * (max_y + 1))
   while t = queue.pull
     p, score = t
@@ -67,7 +66,7 @@ def find(map, max_x, max_y)
 
       n.visit(ba, max_x + 1)
       cost = score + n.val(map)
-      queue.insert({n, cost}, cost.to_i32)
+      queue.insert(n, cost)
     end
   end
   score
