@@ -2,44 +2,20 @@ class Packet
   property version : Int32
   property type_id : Int32
   property value : Int64
-  property consumed
-  property subpackets
+  property consumed : Int32
+  property subpackets : Array(Packet)
 
   def initialize(input, consume = true)
     @version = input.shift(3).join.to_i(base: 2)
     @type_id = input.shift(3).join.to_i(base: 2)
-
     @value = 0
     @subpackets = Array(Packet).new
     if @type_id == 4
-      cont = input.shift
-      groups = input.shift(4)
-      @consumed = 11
-      while cont == '1'
-        cont = input.shift
-        groups.concat input.shift 4
-        @consumed += 5
-      end
-      @value = groups.join.to_i64(base: 2)
+      @consumed, @value = read_literal(input)
     else
       length_type = input.shift
-      if length_type == '0'
-        length = input.shift(15).join.to_i(base: 2)
-        @consumed = 6 + 1 + 15 + length
-        while length > 0
-          pkt = Packet.new(input, consume: false)
-          @subpackets << pkt
-          length -= pkt.consumed
-        end
-      else
-        count = input.shift(11).join.to_i(base: 2)
-        @consumed = 6 + 1 + 11
-        count.times do
-          pkt = Packet.new(input, consume: false)
-          @subpackets << pkt
-          @consumed += pkt.consumed
-        end
-      end
+      @consumed, @subpackets =
+        length_type == '0' ? read_packet_bits(input) : read_packet_count(input)
     end
     while @consumed % 4 != 0 && consume
       @consumed += 1
@@ -64,6 +40,43 @@ class Packet
 
   def versions
     version + subpackets.sum(0, &.versions)
+  end
+
+  private def read_packet_bits(input)
+    length = input.shift(15).join.to_i(base: 2)
+    consumed = 6 + 1 + 15 + length
+    subpackets = [] of Packet
+    while length > 0
+      pkt = Packet.new(input, consume: false)
+      subpackets << pkt
+      length -= pkt.consumed
+    end
+    {consumed, subpackets}
+  end
+
+  private def read_packet_count(input)
+    count = input.shift(11).join.to_i(base: 2)
+    consumed = 6 + 1 + 11
+    subpackets = [] of Packet
+    count.times do
+      pkt = Packet.new(input, consume: false)
+      subpackets << pkt
+      consumed += pkt.consumed
+    end
+    {consumed, subpackets}
+  end
+
+  private def read_literal(input)
+    cont = input.shift
+    groups = input.shift(4)
+    consumed = 11
+    while cont == '1'
+      cont = input.shift
+      groups.concat input.shift 4
+      consumed += 5
+    end
+    value = groups.join.to_i64(base: 2)
+    {consumed, value}
   end
 end
 
