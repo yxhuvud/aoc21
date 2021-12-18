@@ -62,44 +62,32 @@ class Fish
   end
 
   def explode(depth = 1)
-    if depth > 4
-      return {left.as(Int32), 0, right.as(Int32)}
-    else
-      l, r = left, right
-      to_prop_left = nil
-      to_prop_right = nil
-      if l.is_a?(Fish)
-        le, ce, re = l.explode(depth + 1)
-        @left = ce
-        @right = re ? add_right(right, re) : right
-        to_prop_left = le
-      end
-      if r.is_a?(Fish)
-        le, ce, re = r.explode(depth + 1)
-        @left = le ? add_left(left, le) : left
-        @right = ce
-        to_prop_right = re
-      end
-      {to_prop_left, self, to_prop_right}
+    return {left.as(Int32), 0, right.as(Int32)} if depth > 4
+
+    l, r = left, right
+    if l.is_a?(Fish)
+      propagate_left, @left, to_propagate = l.explode(depth + 1)
+      @right = to_propagate ? add_right(right, to_propagate) : right
     end
+    if r.is_a?(Fish)
+      to_propagate, @right, propagate_right = r.explode(depth + 1)
+      @left = to_propagate ? add_left(left, to_propagate) : left
+    end
+    {propagate_left, self, propagate_right}
   end
 
   def add_left(fish, v : Int32)
-    if fish.is_a?(Int32)
-      fish + v
-    else
-      fish.right = add_left(fish.right, v)
-      fish
-    end
+    return fish + v if fish.is_a?(Int32)
+
+    fish.right = add_left(fish.right, v)
+    fish
   end
 
   def add_right(fish, v)
-    if fish.is_a?(Int32)
-      fish + v
-    else
-      fish.left = add_right(fish.left, v)
-      fish
-    end
+    return fish + v if fish.is_a?(Int32)
+
+    fish.left = add_right(fish.left, v)
+    fish
   end
 
   def to_s
