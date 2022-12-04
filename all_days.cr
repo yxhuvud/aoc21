@@ -1003,7 +1003,7 @@ def num(map, x, y)
   -1.to(1) do |dx|
     -1.to(1) do |dy|
       i <<= 1
-      i += map[x + dx][y + dy] ? 1 : 0
+      i &+= map[x &+ dx][y &+ dy] ? 1 : 0
     end
   end
   i
@@ -1157,22 +1157,22 @@ def estimate(pods : Array(Pod))
       a += 1
       dy = (pod[1] - 3).abs
       dx = dy > 0 ? pod[0] : 0
-      (a - 1 + dx + dy)
+      (a &- 1 &+ dx &+ dy)
     when 'B'
       b += 1
       dy = (pod[1] - 5).abs
       dx = dy > 0 ? pod[0] : 0
-      (b - 1 + dx + dy) * 10
+      (b &- 1 &+ dx &+ dy) &* 10
     when 'C'
       c += 1
       dy = (pod[1] - 7).abs
       dx = dy > 0 ? pod[0] : 0
-      (c - 1 + dx + dy) * 100
+      (c &- 1 &+ dx &+ dy) &* 100
     when 'D'
       d += 1
       dy = (pod[1] - 9).abs
       dx = dy > 0 ? pod[0] : 0
-      (d - 1 + dx + dy) * 1000
+      (d &- 1 &+ dx &+ dy) &* 1000
     else raise "wtf"
     end
   end
